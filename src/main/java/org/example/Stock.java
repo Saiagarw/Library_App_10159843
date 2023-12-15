@@ -3,20 +3,17 @@ package org.example;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 interface Stock{
-    //    ArrayList<Stock> stockList = null;
-    public void saveBook(String bTitle,String bAuthor,String bPublisher,String bType,float bPrice);
-    public void updateBook();
-    public void removeBook(int bid);
-    public void searchByCCN(float price,String type,String title);
-    //    public void searchByCost();
-//    public void searchByCategory();
-    public void searchBetweenCostRange(float start,float end);
-
-    public void cheapestBook();
-    public void costlyBook();
-
-    public Boolean bookAvailaibility(int bid);
+    public void saveBook(String bTitle, String bAuthor, String bPublisher, String bType, float bPrice, Date bDate,MySqlConnection jdbcCon);
+    public void updateBook(MySqlConnection jdbcCon,int bid);
+    public void removeBook(MySqlConnection jdbcCon,int bid);
+    public void searchByCCN(MySqlConnection jdbcCon,float price,String type,String title);
+    public void searchBetweenCostRange(MySqlConnection jdbcCon,float start,float end);
+    public void cheapestBook(MySqlConnection jdbcCon);
+    public void costlyBook(MySqlConnection jdbcCon);
+    public void bookAvailaibility(MySqlConnection jdbcCon,int bid);
+    public void removeOldBooks(MySqlConnection jdbc);
 
 }

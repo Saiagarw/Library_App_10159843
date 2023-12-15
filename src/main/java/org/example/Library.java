@@ -5,20 +5,17 @@ import com.sun.org.apache.xpath.internal.operations.Bool;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Date;
 import java.util.HashMap;
 
 public class Library implements Stock{
-
-    float cheapest= (float) 1e5;
-    float costly=0;
-    int cheapBookId,costlyBookId;
 
     HashMap<Integer,Book> bookMap;
     public Library() {
         bookMap=new HashMap<>();
     }
 
-    public void saveBook(String bTitle,String bAuthor,String bPublisher,String bType,float bPrice){
+    public void saveBook(String bTitle,String bAuthor,String bPublisher,String bType,float bPrice,Date bDate,MySqlConnection jdbcCon){
         Book book=new Book();
 
         book.bookTitle=bTitle;
@@ -29,94 +26,48 @@ public class Library implements Stock{
         book.bookId= Book.id;
 
         book.bookPrice=bPrice;
+        book.dateAdded= bDate;
 
-//        this.cheapestBook=Math.min(this.cheapestBook,bPrice);
-//        this.costlyBook=Math.max(this.costlyBook,bPrice);
-
-        if(this.cheapest>bPrice){
-            this.cheapest=bPrice;
-            this.cheapBookId=book.bookId;
-        }
-
-        if(this.costly<bPrice){
-            this.costly=bPrice;
-            this.costlyBookId=book.bookId;
-        }
-
-        this.bookMap.put(book.bookId,book);
+        jdbcCon.addBookData(book);
         System.out.println("The book with "+book.bookId+" has been saved");
     }
     @Override
-    public void removeBook(int bid) {
-
-        if(!this.bookAvailaibility(bid)){
-            System.out.println("Book doesn't exist");
-        }
-
-        int flag=0;
-        for(HashMap.Entry<Integer,Book> entry:bookMap.entrySet()){
-            if(entry.getKey()==bid){
-                bookMap.remove(bid);
-                flag=1;
-                break;
-            }
-        }
-
-        if(flag==0){
-            System.out.println("Book with given id "+ bid +" doesn't exist");
-        }
+    public void removeBook(MySqlConnection jdbcCon,int bid) {
+        jdbcCon.removeBookData(bid);
+        System.out.println("Book removed from the library with id "+bid);
     }
 
     @Override
-    public void updateBook() {
-
+    public void updateBook(MySqlConnection jdbcCon,int bid) {
+        jdbcCon.updateBookData(bid);
     }
 
     @Override
-    public void searchByCCN(float price, String type, String title) {
-
-        int flag=0;
-        for(HashMap.Entry<Integer,Book> entry:bookMap.entrySet()){
-            if((entry.getValue().bookPrice==price) && (entry.getValue().bookType==type) && (entry.getValue().bookTitle==title)){
-                {
-                    System.out.println("Found book with required specification haning id "+entry.getKey());
-                    flag=1;
-                    break;
-                }
-            }
-        }
-
-        if(flag==0){
-            System.out.println("Book doesn't exist with required specification");
-        }
+    public void searchByCCN(MySqlConnection jdbcCon,float price, String type, String title) {
+        jdbcCon.searchByCCN(price,type,title);
     }
 
     @Override
-    public void searchBetweenCostRange(float start,float end){
-        int cnt=0;
-
-        for(HashMap.Entry<Integer,Book> entry:bookMap.entrySet()){
-            if((entry.getValue().bookPrice>=start) && (entry.getValue().bookPrice<=end)){
-                cnt++;
-            }
-        }
-
-        System.out.println("Total books in the given range are "+cnt);
+    public void searchBetweenCostRange(MySqlConnection jdbcCon,float start,float end){
+        jdbcCon.searchBetweenCostRange(start,end);
     }
 
     @Override
-    public void cheapestBook() {
-        System.out.println("The cheapest book ID is "+this.cheapBookId);
+    public void cheapestBook(MySqlConnection jdbcCon) {
+        jdbcCon.cheapestBook();
     }
 
     @Override
-    public void costlyBook() {
-        System.out.println("The costly book ID is "+this.costlyBookId);
+    public void costlyBook(MySqlConnection jdbcCon) {
+        jdbcCon.costlyBook();
     }
 
     @Override
-    public Boolean bookAvailaibility(int bid) {
+    public void bookAvailaibility(MySqlConnection jdbcCon,int bid) {
+        jdbcCon.bookAvailaibility(bid);
+    }
 
-        return bookMap.containsKey(bid);
+    public void removeOldBooks(MySqlConnection jdbcCon){
+        jdbcCon.removeOldBooks();
     }
 }

@@ -1,11 +1,14 @@
 package org.example;
 
+import java.util.Date;
+
 public class Book {
 
     String bookTitle,bookAuthor,bookPublisher,bookType;
     float bookPrice=0;
     static int id=0;
     int bookId;
+    Date dateAdded;
 
     public Book() {
         id++;
